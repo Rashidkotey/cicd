@@ -2,6 +2,8 @@ name: CoderCo CICD workflow
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
   build:
