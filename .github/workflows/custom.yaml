@@ -13,4 +13,4 @@ jobs:
     - name: hello world custom action
       uses: Rashidkotey/coderco-custom@main
       with:
-        who-to-greet: 'CoderCo Team'
+        who-to-greet: 'amonsystem Team'
