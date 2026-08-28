@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main:
+      - main
 
   # the workflow_dispatch will enable you run it manually
   workflow_dispatch:
