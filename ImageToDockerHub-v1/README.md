@@ -4,3 +4,5 @@ NB:
     Dockerfile
 this file are all related to this. 
 app.py contains the python code that the image will will be created from and pushed to DockerHub.
+
+The app.py and Dockerfile relating to this can be found in the directory - manualpushtodockerhub
