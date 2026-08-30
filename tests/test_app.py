@@ -1,4 +1,4 @@
-from app import app
+from app import cicd/app
 
 def test_home():
     client = app.test_client()
