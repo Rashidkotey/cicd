@@ -1,0 +1,160 @@
+name: CI-CD-Deployment
+
+on:
+  push:
+    branches:
+      - main
+  
+  workflow-dispatch:
+
+jobs:
+  # ===========
+  # CI
+  # ===========
+  test:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      # checkout application code
+      - name: checkout repository
+        uses: actions/checkout@v4
+      
+      # Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      # Run tests
+      - name: Run tests
+        run: |
+          pytest
+
+      # Build Docker image to verify Dockerfile works
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t sample-app${{ github.sha }} .
+
+
+  # ========================
+  # Continuous Delivery
+  # ========================
+  publish:
+    name: Continuous Delivery
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # checkout repository
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      # Login to DockerHub
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME}}
+          password: ${{ secrets.DOCKERHUB_TOKEN}}
+
+      # Build and push Docke Image
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:${{ github.sha }}
+
+  # ====================
+  # ACTUAL DEPLOYMENT
+  # ====================
+  deploy:
+    name: Deploy to Production
+    needs: publish
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+
+    steps:
+      # Install SSH client
+      - name: Install SSH client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-client
+
+      # Configure SSH
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh 
+
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key 
+
+          chmod 600 ~/.ssh/ec2_key 
+
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 
+
+      # Deploy application to EC2
+      - name: Deploy to EC2
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF' 
+
+            # Login to DockerHub 
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | \
+              docker login \
+              -u "${{ secrets.DOCKERHUB_USERNAME }}" \
+              --password-stdin 
+
+            # Pull the exact image built by the commit
+            docker pull \
+              ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:${{ github.sha }}
+
+            # Stop old container if it exits
+            docker stop sample-app || true 
+
+            # Remove old container
+            docker rm sample-app || true 
+
+            # Start new container
+            docker run -d \ 
+              --name sample-app \
+              --restart unless-stopped \
+              -p 5000:5000 \
+              ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:${{ github.sha }} 
+            
+            EOF 
+      
+      
+      # Verify deployment
+      - name: Verify deployment 
+        run: | 
+          ssh \
+            -i ~/.ssh/ec2_key \ 
+            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF' 
+
+            echo "Running container:" 
+            docker ps 
+
+            echo " "
+            echo "Container status:"
+            docker inspect \
+              --format='{{.state.status}}' \
+              sample-app 
+
+            EOF 
+
+
