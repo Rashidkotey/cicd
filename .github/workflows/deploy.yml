@@ -135,9 +135,8 @@ jobs:
               --restart unless-stopped \
               -p 5000:5000 \
               ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:${{ github.sha }} 
-            
-          EOF 
-      
+          EOF
+
       
       # Verify deployment
       - name: Verify deployment 
@@ -155,6 +154,5 @@ jobs:
               --format='{{.state.status}}' \
               sample-app 
 
-          EOF 
-
+          EOF
 
