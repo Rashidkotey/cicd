@@ -55,7 +55,7 @@ resource "aws_instance" "this" {
   instance_type = var.instance_type
   ami           = var.ami_id
 
-  key_name = "coderco-key-pair"
+  key_name = "demo-key"
 
   vpc_security_group_ids = [aws_security_group.this.id]
 
