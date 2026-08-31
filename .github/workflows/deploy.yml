@@ -100,13 +100,9 @@ jobs:
         run: |
           mkdir -p ~/.ssh 
 
-          cd ~/.ssh
-
-          touch ec2_key
-
-          cd ..
-
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key 
+          cat << 'EOF' > ~/.ssh/ec2_key
+          ${{ secrets.EC2_SSH_KEY }}
+          EOF
 
           chmod 600 ~/.ssh/ec2_key 
 
