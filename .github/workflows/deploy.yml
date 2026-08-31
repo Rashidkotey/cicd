@@ -113,30 +113,30 @@ jobs:
             -i ~/.ssh/ec2_key \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF' 
 
-      # Login to DockerHub 
+          # Login to DockerHub 
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | \
               docker login \
               -u "${{ secrets.DOCKERHUB_USERNAME }}" \
               --password-stdin 
 
-      # Pull the exact image built by the commit
+          # Pull the exact image built by the commit
             docker pull \
               ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:${{ github.sha }}
 
-      # Stop old container if it exits
+          # Stop old container if it exits
             docker stop sample-app || true 
 
-      # Remove old container
+          # Remove old container
             docker rm sample-app || true 
 
-      # Start new container
+          # Start new container
             docker run -d \
               --name sample-app \
               --restart unless-stopped \
               -p 5000:5000 \
               ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:${{ github.sha }} 
             
-      EOF 
+        'EOF' 
       
       
       # Verify deployment
@@ -155,6 +155,6 @@ jobs:
               --format='{{.state.status}}' \
               sample-app 
 
-      EOF 
+        'EOF' 
 
 
