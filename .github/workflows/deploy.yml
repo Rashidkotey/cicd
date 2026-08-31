@@ -111,7 +111,7 @@ jobs:
         run: |
           ssh \
             -i ~/.ssh/ec2_key \
-            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF' 
+            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF
 
           # Login to DockerHub 
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | \
@@ -136,7 +136,7 @@ jobs:
               -p 5000:5000 \
               ${{ secrets.DOCKERHUB_USERNAME }}/sample-app:${{ github.sha }} 
             
-        'EOF' 
+          EOF 
       
       
       # Verify deployment
@@ -144,7 +144,7 @@ jobs:
         run: | 
           ssh \
             -i ~/.ssh/ec2_key \ 
-            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF' 
+            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << EOF 
 
             echo "Running container:" 
             docker ps 
@@ -155,6 +155,6 @@ jobs:
               --format='{{.state.status}}' \
               sample-app 
 
-        'EOF' 
+          EOF 
 
 
