@@ -100,7 +100,11 @@ jobs:
         run: |
           mkdir -p ~/.ssh 
 
-          touch ~/.ssh/ec2_key
+          cd ~/.ssh
+
+          touch ec2_key
+
+          cd ..
 
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key 
 
