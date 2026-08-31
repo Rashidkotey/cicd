@@ -110,7 +110,7 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh \
-            -i ~/.ssh/ec2_key \
+            -i ~/.ssh/authorized_keys \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
 
           # Login to DockerHub 
@@ -142,7 +142,7 @@ jobs:
       - name: Verify deployment 
         run: | 
           ssh \
-            -i ~/.ssh/ec2_key \ 
+            -i ~/.ssh/authorized_keys \ 
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
 
             echo "Running container:" 
