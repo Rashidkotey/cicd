@@ -152,7 +152,7 @@ jobs:
             echo ""
             echo "Container status:"
             docker inspect \
-              --format='{{.state.status}}' \
+              --format='{{.State.Status}}' \
               sample-app 
 
           EOF
