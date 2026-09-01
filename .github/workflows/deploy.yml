@@ -143,7 +143,7 @@ jobs:
       - name: Verify deployment 
         run: | 
           ssh \
-            -i ~/.ssh/ec2_key \ 
+            -i ~/.ssh/ec2_key \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
 
             echo "Running container:" 
