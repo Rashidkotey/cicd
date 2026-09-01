@@ -149,7 +149,7 @@ jobs:
             echo "Running container:" 
             docker ps 
 
-            echo " "
+            echo ""
             echo "Container status:"
             docker inspect \
               --format='{{.state.status}}' \
