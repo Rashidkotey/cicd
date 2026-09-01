@@ -101,7 +101,7 @@ jobs:
           mkdir -p ~/.ssh 
 
           cat << 'EOF' > ~/.ssh/ec2_key
-          "${{ secrets.EC2_SSH_KEY }}"
+          ${{ secrets.EC2_SSH_KEY }}
           EOF
           
           chmod 600 ~/.ssh/ec2_key 
