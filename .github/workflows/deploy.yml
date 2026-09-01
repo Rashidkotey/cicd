@@ -106,7 +106,7 @@ jobs:
 
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 
 
-      # Deploy application to EC2
+      # Deploy application to the EC2
       - name: Deploy to EC2
         run: |
           ssh \
